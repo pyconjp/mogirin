@@ -3,7 +3,10 @@ from traceback import TracebackException
 
 from discord.ext import commands
 
+from mogirin import TicketCollector
+
 bot = commands.Bot(command_prefix="/")
+collector = TicketCollector(getenv("SPREADSHEET_ID"))
 
 
 @bot.event
@@ -31,7 +34,7 @@ async def ping(ctx):
 
 
 def collect_ticket(ticket_number: str):
-    return "Hello"
+    return collector.collect(ticket_number)
 
 
 @bot.event
@@ -45,14 +48,13 @@ async def on_message(message):
     ticket_number = message.content.split()[1]
     if not ticket_number.isnumeric():
         reply_message = (
-            f"{message.author.mention} ValueError: "
-            f"invalid ticket number {ticket_number!r}\n"
+            f"ValueError: invalid ticket number {ticket_number!r}\n"
             "Please input numeric ticket number instead."
         )
     else:
         reply_message = collect_ticket(ticket_number)
 
-    await message.channel.send(reply_message)
+    await message.channel.send(f"{message.author.mention} {reply_message}")
 
 
 token = getenv("DISCORD_BOT_TOKEN")
