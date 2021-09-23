@@ -9,7 +9,7 @@ import gspread
 
 class TicketCollector:
     def __init__(self, spreadsheet_id: str):
-        self.searcher = SpreadsheetSearcher.from_id(spreadsheet_id)
+        self.searcher = TicketSheetSearcher.from_id(spreadsheet_id)
 
     async def collect(
         self, ticket_number: str, member: discord.Member, role: discord.Role
@@ -32,12 +32,12 @@ class TicketCollector:
         )
 
 
-class SpreadsheetSearcher:
+class TicketSheetSearcher:
     def __init__(self, worksheet: gspread.Worksheet):
         self.worksheet = worksheet
 
     @classmethod
-    def from_id(cls, spreadsheet_id: str) -> SpreadsheetSearcher:
+    def from_id(cls, spreadsheet_id: str) -> TicketSheetSearcher:
         info = json.loads(os.getenv("SERVICE_ACCOUNT_INFO_AS_STR"))
         client = gspread.service_account_from_dict(info)
         spreadsheet = client.open_by_key(spreadsheet_id)

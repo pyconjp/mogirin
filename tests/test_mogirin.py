@@ -4,7 +4,7 @@ from unittest.mock import patch
 import mogirin as m
 
 
-class FromIdSpreadsheetSearcherTestCase(TestCase):
+class FromIdTicketSheetSearcherTestCase(TestCase):
     @patch("mogirin.gspread.service_account_from_dict")
     @patch("mogirin.json.loads")
     @patch("mogirin.os.getenv")
@@ -13,9 +13,9 @@ class FromIdSpreadsheetSearcherTestCase(TestCase):
         client = service_account_from_dict.return_value
         spreadsheet = client.open_by_key.return_value
 
-        actual = m.SpreadsheetSearcher.from_id(spreadsheet_id)
+        actual = m.TicketSheetSearcher.from_id(spreadsheet_id)
 
-        self.assertIsInstance(actual, m.SpreadsheetSearcher)
+        self.assertIsInstance(actual, m.TicketSheetSearcher)
         self.assertEqual(actual.worksheet, spreadsheet.sheet1)
         getenv.assert_called_once_with("SERVICE_ACCOUNT_INFO_AS_STR")
         json_loads.assert_called_once_with(getenv.return_value)
