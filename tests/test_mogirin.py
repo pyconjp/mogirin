@@ -61,3 +61,14 @@ class QueryAlreadyCollectedTicketSheetSearcherTestCase(TestCase):
 
         self.assertFalse(actual)
         self.worksheet.cell.assert_called_once_with(3, 3)
+
+
+class RegisterAsCollectedTicketSheetSearcherTestCase(TestCase):
+    def test_register_as_collected(self):
+        worksheet = MagicMock(spec=gspread.Worksheet)
+        sut = m.TicketSheetSearcher(worksheet)
+        cell = gspread.Cell(4, 1, "567890")
+
+        sut.register_as_collected(cell)
+
+        worksheet.update_cell.assert_called_once_with(4, 3, "✅")
