@@ -1,6 +1,8 @@
+import asyncio
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
+import discord
 import gspread
 
 import mogirin as m
@@ -72,3 +74,13 @@ class RegisterAsCollectedTicketSheetSearcherTestCase(TestCase):
         sut.register_as_collected(cell)
 
         worksheet.update_cell.assert_called_once_with(4, 3, "✅")
+
+
+class AttachRoleAttacherTestCase(TestCase):
+    def test_attach(self):
+        member = AsyncMock(spec=discord.Member)
+        role = MagicMock(spec=discord.Role)
+
+        asyncio.run(m.RoleAttacher.attach(member, role))
+
+        member.add_roles.assert_awaited_once_with(role)
