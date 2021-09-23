@@ -37,3 +37,16 @@ class FindCellTicketSheetSearcherTestCase(TestCase):
 
         self.assertEqual(actual, worksheet.find.return_value)
         worksheet.find.assert_called_once_with(ticket_number, in_column=1)
+
+
+class QueryAlreadyCollectedTicketSheetSearcherTestCase(TestCase):
+    def test_return_true(self):
+        worksheet = MagicMock(spec=gspread.Worksheet)
+        sut = m.TicketSheetSearcher(worksheet)
+        cell = gspread.Cell(2, 1, "345678")
+        worksheet.cell.return_value = gspread.Cell(2, 3, "✅")
+
+        actual = sut.query_already_collected(cell)
+
+        self.assertTrue(actual)
+        worksheet.cell.assert_called_once_with(2, 3)
