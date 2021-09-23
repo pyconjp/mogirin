@@ -1,6 +1,7 @@
 from os import getenv
 from traceback import TracebackException
 
+import discord
 from discord.ext import commands
 
 from mogirin import TicketCollector
@@ -36,8 +37,10 @@ async def ping(ctx):
     await ctx.send("pong")
 
 
-def collect_ticket(ticket_number: str):
-    return collector.collect(ticket_number)
+async def collect_ticket(
+    ticket_number: str, member: discord.Member, role: discord.Role
+):
+    return await collector.collect(ticket_number, member, role)
 
 
 @bot.event
@@ -49,7 +52,7 @@ async def on_message(message):
     if bot.user not in message.mentions:
         # @mogirin メンションがないmessageには反応しない
         return
-    
+
     attendee_role = message.guild.get_role(ATTENDEE_ROLE_ID)
     if attendee_role in message.author.roles:
         # すでにattendeeロールが付いているユーザからのmessageには反応しない
@@ -63,7 +66,9 @@ async def on_message(message):
             "Please input numeric ticket number instead."
         )
     else:
-        reply_message = collect_ticket(ticket_number)
+        reply_message = await collect_ticket(
+            ticket_number, message.author, attendee_role
+        )
 
     await message.channel.send(f"{message.author.mention} {reply_message}")
 
