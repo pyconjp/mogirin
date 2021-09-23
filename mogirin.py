@@ -39,6 +39,10 @@ class SpreadsheetSearcher:
         spreadsheet = client.open_by_key(spreadsheet_id)
         self.worksheet = spreadsheet.sheet1
 
+    @classmethod
+    def from_id(cls, spreadsheet_id: str) -> SpreadsheetSearcher:
+        raise NotImplementedError
+
     def find_cell(self, ticket_number: str) -> gspread.Cell | None:
         return self.worksheet.find(ticket_number, in_column=1)
 
