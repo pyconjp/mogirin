@@ -6,6 +6,7 @@ from discord.ext import commands
 from mogirin import TicketCollector
 
 MOGIRI_CHANNEL_ID = int(getenv("MOGIRI_CHANNEL_ID"))
+ATTENDEE_ROLE_ID = int(getenv("ATTENDEE_ROLE_ID"))
 
 bot = commands.Bot(command_prefix="/")
 collector = TicketCollector(getenv("SPREADSHEET_ID"))
@@ -46,6 +47,12 @@ async def on_message(message):
         return
 
     if bot.user not in message.mentions:
+        # @mogirin メンションがないmessageには反応しない
+        return
+    
+    attendee_role = message.guild.get_role(ATTENDEE_ROLE_ID)
+    if attendee_role in message.author.roles:
+        # すでにattendeeロールが付いているユーザからのmessageには反応しない
         return
 
     # TODO: 正規表現で最初に見つけた数字にするとより簡潔に書けそう
