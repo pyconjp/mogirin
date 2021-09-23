@@ -9,7 +9,7 @@ import gspread
 
 class TicketCollector:
     def __init__(self, spreadsheet_id: str):
-        self.searcher = SpreadsheetSearcher(spreadsheet_id)
+        self.searcher = SpreadsheetSearcher.from_id(spreadsheet_id)
 
     async def collect(
         self, ticket_number: str, member: discord.Member, role: discord.Role
