@@ -1,5 +1,7 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
+
+import gspread
 
 import mogirin as m
 
@@ -23,3 +25,15 @@ class FromIdTicketSheetSearcherTestCase(TestCase):
             json_loads.return_value
         )
         client.open_by_key.assert_called_once_with(spreadsheet_id)
+
+
+class FindCellTicketSheetSearcherTestCase(TestCase):
+    def test_find_cell(self):
+        worksheet = MagicMock(spec=gspread.Worksheet)
+        sut = m.TicketSheetSearcher(worksheet)
+        ticket_number = "123456"
+
+        actual = sut.find_cell(ticket_number)
+
+        self.assertEqual(actual, worksheet.find.return_value)
+        worksheet.find.assert_called_once_with(ticket_number, in_column=1)
