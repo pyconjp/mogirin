@@ -5,6 +5,8 @@ from discord.ext import commands
 
 from mogirin import TicketCollector
 
+MOGIRI_CHANNEL_ID = int(getenv("MOGIRI_CHANNEL_ID"))
+
 bot = commands.Bot(command_prefix="/")
 collector = TicketCollector(getenv("SPREADSHEET_ID"))
 
@@ -39,7 +41,9 @@ def collect_ticket(ticket_number: str):
 
 @bot.event
 async def on_message(message):
-    # TODO: もぎり用チャンネルでなければ早期リターンする（もぎり用チャンネルはまだない）
+    if message.channel.id != MOGIRI_CHANNEL_ID:
+        # もぎり用テキストチャンネル以外のmessageには反応しない
+        return
 
     if bot.user not in message.mentions:
         return
