@@ -46,12 +46,24 @@ class TicketSheetSearcher:
     def find_cell(self, ticket_number: str) -> gspread.Cell | None:
         return self.worksheet.find(ticket_number, in_column=1)
 
-    def query_already_collected(self, cell: gspread.Cell) -> bool:
-        collection_status_cell = self.worksheet.cell(cell.row, cell.col + 2)
+    def query_already_collected(
+        self, ticket_number_cell: gspread.Cell
+    ) -> bool:
+        collection_status_cell = self.worksheet.cell(
+            *self._status_cell_indice(ticket_number_cell)
+        )
         return bool(collection_status_cell.value)
 
-    def register_as_collected(self, cell: gspread.Cell):
-        self.worksheet.update_cell(cell.row, cell.col + 2, "✅")
+    def register_as_collected(self, ticket_number_cell: gspread.Cell):
+        self.worksheet.update_cell(
+            *self._status_cell_indice(ticket_number_cell), "✅"
+        )
+
+    @staticmethod
+    def _status_cell_indice(
+        ticket_number_cell: gspread.Cell,
+    ) -> tuple[int, int]:
+        return ticket_number_cell.row, ticket_number_cell.col + 2
 
 
 class RoleAttacher:
