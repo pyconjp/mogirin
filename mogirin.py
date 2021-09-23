@@ -33,15 +33,15 @@ class TicketCollector:
 
 
 class SpreadsheetSearcher:
-    def __init__(self, spreadsheet_id: str):
-        info = json.loads(os.getenv("SERVICE_ACCOUNT_INFO_AS_STR"))
-        client = gspread.service_account_from_dict(info)
-        spreadsheet = client.open_by_key(spreadsheet_id)
-        self.worksheet = spreadsheet.sheet1
+    def __init__(self, worksheet: gspread.Worksheet):
+        self.worksheet = worksheet
 
     @classmethod
     def from_id(cls, spreadsheet_id: str) -> SpreadsheetSearcher:
-        raise NotImplementedError
+        info = json.loads(os.getenv("SERVICE_ACCOUNT_INFO_AS_STR"))
+        client = gspread.service_account_from_dict(info)
+        spreadsheet = client.open_by_key(spreadsheet_id)
+        return cls(spreadsheet.sheet1)
 
     def find_cell(self, ticket_number: str) -> gspread.Cell | None:
         return self.worksheet.find(ticket_number, in_column=1)
