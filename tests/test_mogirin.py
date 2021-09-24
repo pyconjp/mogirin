@@ -8,6 +8,17 @@ import gspread
 import mogirin as m
 
 
+class InitTicketCollectorTestCase(TestCase):
+    @patch("mogirin.TicketSheetSearcher.from_id")
+    def test_init(self, from_id):
+        spreadsheet_id = "1**some_spreadsheet_id*1"
+
+        actual = m.TicketCollector(spreadsheet_id)
+
+        self.assertEqual(actual.searcher, from_id.return_value)
+        from_id.assert_called_once_with(spreadsheet_id)
+
+
 class FromIdTicketSheetSearcherTestCase(TestCase):
     @patch("mogirin.gspread.service_account_from_dict")
     @patch("mogirin.json.loads")
