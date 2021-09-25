@@ -19,9 +19,15 @@ class InitTicketCollectorTestCase(TestCase):
         from_id.assert_called_once_with(spreadsheet_id)
 
 
+@patch("mogirin.RoleAttacher.attach", new_callable=AsyncMock)
+@patch("mogirin.TicketSheetSearcher.from_id")
 class CollectTicketCollectorTestCase(TestCase):
-    @patch("mogirin.RoleAttacher.attach", new_callable=AsyncMock)
-    @patch("mogirin.TicketSheetSearcher.from_id")
+    def setUp(self):
+        self.spreadsheet_id = "1**some_spreadsheet_id*a"
+
+        self.member = MagicMock(spec=discord.Member)
+        self.role = MagicMock(spec=discord.Role)
+
     def test_normal_case(self, from_id, attach):
         spreadsheet_id = "1**some_spreadsheet_id*a"
         sut = m.TicketCollector(spreadsheet_id)
@@ -40,6 +46,21 @@ class CollectTicketCollectorTestCase(TestCase):
         searcher.query_already_collected.assert_called_once_with(ticket_cell)
         attach.assert_awaited_once_with(member, role)
         searcher.register_as_collected.assert_called_once_with(ticket_cell)
+
+    def test_ticket_already_collected(self, from_id, attach):
+        sut = m.TicketCollector(self.spreadsheet_id)
+        searcher = from_id.return_value
+        ticket_cell = gspread.Cell(69, 1, "679018")
+        searcher.find_cell.return_value = ticket_cell
+        searcher.query_already_collected.return_value = True
+        ticket_number = "679018"
+
+        asyncio.run(sut.collect(ticket_number, self.member, self.role))
+
+        searcher.find_cell.assert_called_once_with("679018")
+        searcher.query_already_collected.assert_called_once_with(ticket_cell)
+        attach.assert_not_awaited()
+        searcher.register_as_collected.assert_not_called()
 
 
 class FromIdTicketSheetSearcherTestCase(TestCase):
