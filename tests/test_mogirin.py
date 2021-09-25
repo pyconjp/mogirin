@@ -59,6 +59,19 @@ class CollectTicketCollectorTestCase(TestCase):
         attach.assert_not_awaited()
         searcher.register_as_collected.assert_not_called()
 
+    def test_cell_not_found(self, from_id, attach):
+        sut = m.TicketCollector(self.spreadsheet_id)
+        searcher = from_id.return_value
+        searcher.find_cell.return_value = None
+        ticket_number = "679236"
+
+        asyncio.run(sut.collect(ticket_number, self.member, self.role))
+
+        searcher.find_cell.assert_called_once_with("679236")
+        searcher.query_already_collected.assert_not_called()
+        attach.assert_not_awaited()
+        searcher.register_as_collected.assert_not_called()
+
 
 class FromIdTicketSheetSearcherTestCase(TestCase):
     @patch("mogirin.gspread.service_account_from_dict")
