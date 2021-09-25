@@ -29,22 +29,18 @@ class CollectTicketCollectorTestCase(TestCase):
         self.role = MagicMock(spec=discord.Role)
 
     def test_normal_case(self, from_id, attach):
-        spreadsheet_id = "1**some_spreadsheet_id*a"
-        sut = m.TicketCollector(spreadsheet_id)
+        sut = m.TicketCollector(self.spreadsheet_id)
         searcher = from_id.return_value
         ticket_cell = gspread.Cell(50, 1, "678901")
         searcher.find_cell.return_value = ticket_cell
         searcher.query_already_collected.return_value = False
-
         ticket_number = "678901"
-        member = MagicMock(spec=discord.Member)
-        role = MagicMock(spec=discord.Role)
 
-        asyncio.run(sut.collect(ticket_number, member, role))
+        asyncio.run(sut.collect(ticket_number, self.member, self.role))
 
         searcher.find_cell.assert_called_once_with("678901")
         searcher.query_already_collected.assert_called_once_with(ticket_cell)
-        attach.assert_awaited_once_with(member, role)
+        attach.assert_awaited_once_with(self.member, self.role)
         searcher.register_as_collected.assert_called_once_with(ticket_cell)
 
     def test_ticket_already_collected(self, from_id, attach):
