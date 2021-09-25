@@ -4,7 +4,11 @@ from traceback import TracebackException
 import discord
 from discord.ext import commands
 
-from mogirin import TicketCollector
+from mogirin import (
+    TicketAlreadyCollected,
+    TicketCollector,
+    TicketNumberNotFound,
+)
 
 MOGIRI_CHANNEL_ID = int(getenv("MOGIRI_CHANNEL_ID"))
 ATTENDEE_ROLE_ID = int(getenv("ATTENDEE_ROLE_ID"))
@@ -39,8 +43,18 @@ async def ping(ctx):
 
 async def collect_ticket(
     ticket_number: str, member: discord.Member, role: discord.Role
-):
-    return await collector.collect(ticket_number, member, role)
+) -> str:
+    try:
+        await collector.collect(ticket_number, member, role)
+    except TicketNumberNotFound:
+        return (
+            f"LookupError: Couldn't find your number {ticket_number!r}.\n"
+            "Sorry, try again."
+        )
+    except TicketAlreadyCollected:
+        return f"RuntimeError: the ticket {ticket_number!r} is already used."
+    else:
+        return "Accepted! Welcome to PyCon JP 2021 venue!"
 
 
 @bot.event
