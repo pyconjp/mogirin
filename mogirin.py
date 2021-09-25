@@ -7,6 +7,10 @@ import discord
 import gspread
 
 
+class TicketAlreadyCollected(Exception):
+    ...
+
+
 class TicketCollector:
     def __init__(self, spreadsheet_id: str):
         self.searcher = TicketSheetSearcher.from_id(spreadsheet_id)
@@ -18,10 +22,7 @@ class TicketCollector:
         if ticket_cell := self.searcher.find_cell(ticket_number):
             is_collected = self.searcher.query_already_collected(ticket_cell)
             if is_collected:
-                return (
-                    f"RuntimeError: the ticket {ticket_number!r} "
-                    "is already used."
-                )
+                raise TicketAlreadyCollected
             else:
                 await RoleAttacher.attach(member, role)
                 self.searcher.register_as_collected(ticket_cell)
