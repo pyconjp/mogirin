@@ -19,6 +19,29 @@ class InitTicketCollectorTestCase(TestCase):
         from_id.assert_called_once_with(spreadsheet_id)
 
 
+class CollectTicketCollectorTestCase(TestCase):
+    @patch("mogirin.RoleAttacher.attach", new_callable=AsyncMock)
+    @patch("mogirin.TicketSheetSearcher.from_id")
+    def test_normal_case(self, from_id, attach):
+        spreadsheet_id = "1**some_spreadsheet_id*a"
+        sut = m.TicketCollector(spreadsheet_id)
+        searcher = from_id.return_value
+        ticket_cell = gspread.Cell(50, 1, "678901")
+        searcher.find_cell.return_value = ticket_cell
+        searcher.query_already_collected.return_value = False
+
+        ticket_number = "678901"
+        member = MagicMock(spec=discord.Member)
+        role = MagicMock(spec=discord.Role)
+
+        asyncio.run(sut.collect(ticket_number, member, role))
+
+        searcher.find_cell.assert_called_once_with("678901")
+        searcher.query_already_collected.assert_called_once_with(ticket_cell)
+        attach.assert_awaited_once_with(member, role)
+        searcher.register_as_collected.assert_called_once_with(ticket_cell)
+
+
 class FromIdTicketSheetSearcherTestCase(TestCase):
     @patch("mogirin.gspread.service_account_from_dict")
     @patch("mogirin.json.loads")
