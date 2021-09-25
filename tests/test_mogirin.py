@@ -65,7 +65,8 @@ class CollectTicketCollectorTestCase(TestCase):
         searcher.find_cell.return_value = None
         ticket_number = "679236"
 
-        asyncio.run(sut.collect(ticket_number, self.member, self.role))
+        with self.assertRaises(m.TicketNumberNotFound):
+            asyncio.run(sut.collect(ticket_number, self.member, self.role))
 
         searcher.find_cell.assert_called_once_with("679236")
         searcher.query_already_collected.assert_not_called()

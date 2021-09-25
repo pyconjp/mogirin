@@ -7,6 +7,10 @@ import discord
 import gspread
 
 
+class TicketNumberNotFound(Exception):
+    ...
+
+
 class TicketAlreadyCollected(Exception):
     ...
 
@@ -27,10 +31,7 @@ class TicketCollector:
                 await RoleAttacher.attach(member, role)
                 self.searcher.register_as_collected(ticket_cell)
                 return "Accepted! Welcome to PyCon JP 2021 venue!"
-        return (
-            f"RuntimeError: Couldn't find your number {ticket_number!r}.\n"
-            "Sorry, try again."
-        )
+        raise TicketNumberNotFound
 
 
 class TicketSheetSearcher:
