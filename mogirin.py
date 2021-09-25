@@ -23,15 +23,14 @@ class TicketCollector:
         self, ticket_number: str, member: discord.Member, role: discord.Role
     ) -> str:
         # TODO: 例外を送出するだけにしてメッセージはbot側で設定したい
-        if ticket_cell := self.searcher.find_cell(ticket_number):
-            is_collected = self.searcher.query_already_collected(ticket_cell)
-            if is_collected:
-                raise TicketAlreadyCollected
-            else:
-                await RoleAttacher.attach(member, role)
-                self.searcher.register_as_collected(ticket_cell)
-                return "Accepted! Welcome to PyCon JP 2021 venue!"
-        raise TicketNumberNotFound
+        if not (ticket_cell := self.searcher.find_cell(ticket_number)):
+            raise TicketNumberNotFound
+        if self.searcher.query_already_collected(ticket_cell):
+            raise TicketAlreadyCollected
+        else:
+            await RoleAttacher.attach(member, role)
+            self.searcher.register_as_collected(ticket_cell)
+            return "Accepted! Welcome to PyCon JP 2021 venue!"
 
 
 class TicketSheetSearcher:
