@@ -9,8 +9,9 @@ import gspread
 
 
 def find_ticket_number(content: str) -> str | None:
-    m = re.search(r"\d+", content)
-    return m.group(0)
+    if m := re.search(r"\d+", content):
+        return m.group(0)
+    return None
 
 
 class TicketNumberNotFound(Exception):
