@@ -8,6 +8,16 @@ import gspread
 import mogirin as m
 
 
+class FindTicketNumberTestCase(TestCase):
+    def test_before_mention(self):
+        message_content = "3456789 <@!813665045207257128>"
+        expected = "3456789"
+
+        actual = m.find_ticket_number(message_content)
+
+        self.assertEqual(actual, expected)
+
+
 class InitTicketCollectorTestCase(TestCase):
     @patch("mogirin.TicketSheetSearcher.from_id")
     def test_init(self, from_id):

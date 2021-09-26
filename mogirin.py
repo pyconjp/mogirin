@@ -7,6 +7,10 @@ import discord
 import gspread
 
 
+def find_ticket_number(content: str) -> str | None:
+    raise NotImplementedError
+
+
 class TicketNumberNotFound(Exception):
     ...
 
