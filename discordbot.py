@@ -50,10 +50,15 @@ async def collect_ticket(
     except TicketNumberNotFound:
         return (
             f"LookupError: Couldn't find your number {ticket_number!r}.\n"
-            "Sorry, try again."
+            "If the number is correct, try again in a few hours "
+            "(Sorry, there is a lag in synchronizing participant information)."
         )
     except TicketAlreadyCollected:
-        return f"RuntimeError: the ticket {ticket_number!r} is already used."
+        return (
+            f"RuntimeError: the ticket {ticket_number!r} is already used.\n"
+            "If the number is correct, please contact our staff "
+            "with `@2021-staff` mention."
+        )
     else:
         return "Accepted! Welcome to PyCon JP 2021 venue!"
 
