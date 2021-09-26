@@ -10,8 +10,16 @@ import mogirin as m
 
 class FindTicketNumberTestCase(TestCase):
     def test_before_mention(self):
-        message_content = "3456789 <@!813665045207257128>"
+        message_content = "3456789 @mogirin"
         expected = "3456789"
+
+        actual = m.find_ticket_number(message_content)
+
+        self.assertEqual(actual, expected)
+
+    def test_after_mention(self):
+        message_content = "@mogirin 3456791"
+        expected = "3456791"
 
         actual = m.find_ticket_number(message_content)
 
