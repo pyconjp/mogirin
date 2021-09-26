@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import re
 
 import discord
 import gspread
 
 
 def find_ticket_number(content: str) -> str | None:
-    raise NotImplementedError
+    m = re.search(r"\d+", content)
+    return m.group(0)
 
 
 class TicketNumberNotFound(Exception):
