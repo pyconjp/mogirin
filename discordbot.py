@@ -63,6 +63,10 @@ async def on_message(message):
         # もぎり用テキストチャンネル以外のmessageには反応しない
         return
 
+    if message.author.bot:
+        # botからのmessageには反応しない (Issue #8)
+        return
+
     if bot.user not in message.mentions:
         # @mogirin メンションがないmessageには反応しない
         return
