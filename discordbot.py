@@ -8,6 +8,7 @@ from mogirin import (
     TicketAlreadyCollected,
     TicketCollector,
     TicketNumberNotFound,
+    find_ticket_number,
 )
 
 MOGIRI_CHANNEL_ID = int(getenv("MOGIRI_CHANNEL_ID"))
@@ -76,12 +77,11 @@ async def on_message(message):
         # すでにattendeeロールが付いているユーザからのmessageには反応しない
         return
 
-    # TODO: 正規表現で最初に見つけた数字にするとより簡潔に書けそう
-    ticket_number = message.content.split()[1]
-    if not ticket_number.isnumeric():
+    ticket_number = find_ticket_number(message.clean_content)
+    if ticket_number is None:
         reply_message = (
-            f"ValueError: invalid ticket number {ticket_number!r}\n"
-            "Please input numeric ticket number instead."
+            f"ValueError: ticket number is not included in your message.\n"
+            "Please input numeric ticket number like `@mogirin 1234567`."
         )
     else:
         reply_message = await collect_ticket(
