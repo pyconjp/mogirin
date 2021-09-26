@@ -32,6 +32,14 @@ class FindTicketNumberTestCase(TestCase):
 
         self.assertIsNone(actual)
 
+    def test_return_first(self):
+        clean_content = "@mogirin 3456802 3457196"
+        expected = "3456802"
+
+        actual = m.find_ticket_number(clean_content)
+
+        self.assertEqual(actual, expected)
+
 
 class InitTicketCollectorTestCase(TestCase):
     @patch("mogirin.TicketSheetSearcher.from_id")
