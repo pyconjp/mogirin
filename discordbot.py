@@ -18,6 +18,11 @@ bot = commands.Bot(command_prefix="/")
 collector = TicketCollector(getenv("SPREADSHEET_ID"))
 
 
+class NeedToNotifyMonitors(Exception):
+    def __init__(self, message):
+        self.message = message
+
+
 @bot.event
 async def on_command_error(ctx, error):
     original_error = getattr(error, "original", error)
@@ -30,6 +35,18 @@ async def on_command_error(ctx, error):
 async def greet(channel_id=int(getenv("LOGGING_CHANNEL_ID"))):
     channel = bot.get_channel(channel_id)
     await channel.send("[INFO] もぎりん、起動しました")
+
+
+async def notify(
+    message,
+    channel_id=int(getenv("LOGGING_CHANNEL_ID")),
+    guild_id=int(getenv("GUILD_ID")),
+    role_id=int(getenv("STAFF_ROLE_ID")),
+):
+    channel = bot.get_channel(channel_id)
+    guild = bot.get_guild(guild_id)
+    staff_role = guild.get_role(role_id)
+    await channel.send(f"{staff_role.mention} {message}")
 
 
 @bot.event
@@ -54,11 +71,12 @@ async def collect_ticket(
             "(Sorry, there is a lag in synchronizing participant information)."
         )
     except TicketAlreadyCollected:
-        return (
+        message = (
             f"RuntimeError: the ticket {ticket_number!r} is already used.\n"
-            "If the number is correct, please contact our staff "
+            "If the number is correct, please contact staff "
             "with `@2021-staff` mention."
         )
+        raise NeedToNotifyMonitors(message)
     else:
         return "Accepted! Welcome to PyCon JP 2021 venue!"
 
@@ -83,17 +101,29 @@ async def on_message(message):
         return
 
     ticket_number = find_ticket_number(message.clean_content)
+    needs_to_notify = False
     if ticket_number is None:
         reply_message = (
             f"ValueError: ticket number is not included in your message.\n"
             "Please input numeric ticket number like `@mogirin 1234567`."
         )
     else:
-        reply_message = await collect_ticket(
-            ticket_number, message.author, attendee_role
-        )
+        try:
+            reply_message = await collect_ticket(
+                ticket_number, message.author, attendee_role
+            )
+        except NeedToNotifyMonitors as ex:
+            needs_to_notify = True
+            reply_message = ex.message
 
     await message.channel.send(f"{message.author.mention} {reply_message}")
+
+    if needs_to_notify:
+        monitor_message = (
+            f"「{message.author.display_name}」氏のもぎりに以下のエラーを送出しました\n"
+            f"{reply_message}"
+        )
+        await notify(monitor_message)
 
 
 token = getenv("DISCORD_BOT_TOKEN")
