@@ -1,0 +1,4 @@
+gspread
+six
+
+git+https://github.com/ftnext/connpass-ops-playbook@0.1.0
