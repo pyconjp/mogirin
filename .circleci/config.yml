@@ -58,8 +58,10 @@ workflows:
               only: main
   sponsor-sync-wf:
     jobs:
-      - sponsor-sync:
+      - sponsor-sync
+    triggers:
+      - schedule:
+          cron: "0 9,21 * * *"
           filters:
             branches:
               only: main
-
