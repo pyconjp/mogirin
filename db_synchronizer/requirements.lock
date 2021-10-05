@@ -2,7 +2,7 @@ cachetools==4.2.4
 certifi==2021.5.30
 charset-normalizer==2.0.6
 chromedriver-autoinstaller==0.2.2
-connpass-ops-playbook==0.1.0
+git+https://github.com/ftnext/connpass-ops-playbook@0.1.0
 google-auth==2.2.1
 google-auth-oauthlib==0.4.6
 gspread==4.0.1
