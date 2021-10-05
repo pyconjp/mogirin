@@ -38,17 +38,8 @@ if __name__ == "__main__":
     worksheet = spreadsheet.sheet1
     records = worksheet.get_all_records()
     filtered_by_type = [r for r in records if r["type"] == ticket_type]
-    if not filtered_by_type:
-        max_receipt_number = None
-    else:
-        max_receipt_number = filtered_by_type[-1]["receipt_number"]
 
-    if max_receipt_number is None:
-        need_to_append_participants = participants
-    else:
-        need_to_append_participants = [
-            p for p in participants if p[0] > max_receipt_number
-        ]
+    need_to_append_participants = difference(participants, filtered_by_type)
 
     if not need_to_append_participants:
         print("No need to append to spreadsheet.")
