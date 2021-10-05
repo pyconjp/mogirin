@@ -1,5 +1,7 @@
 import argparse
 import csv
+import json
+import os
 import re
 import sys
 
@@ -21,7 +23,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("participants_csv")
     parser.add_argument("spreadsheet_key")
-    parser.add_argument("--service_account", required=True)
     args = parser.parse_args()
 
     m = re.search(r"\d+", args.participants_csv)
@@ -35,7 +36,8 @@ if __name__ == "__main__":
         ]
     participants.sort(key=lambda t: t[0])
 
-    client = gspread.service_account(filename=args.service_account)
+    info = json.loads(os.getenv("SERVICE_ACCOUNT_INFO_AS_STR"))
+    client = gspread.service_account_from_dict(info)
     spreadsheet = client.open_by_key(args.spreadsheet_key)
     worksheet = spreadsheet.sheet1
     records = worksheet.get_all_records()
@@ -52,3 +54,4 @@ if __name__ == "__main__":
         for p in need_to_append_participants
     ]
     worksheet.append_rows(rows)
+    print(f"{len(rows)} rows added to {args.spreadsheet_key}")
