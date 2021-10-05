@@ -4,6 +4,8 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - checkout
+      - setup_remote_docker
       - run: echo "Testing"
       - run: docker run --rm pyconjp/mogirin-db-synchronizer:0.0.1 224112
 
