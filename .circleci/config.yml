@@ -6,10 +6,16 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: Set environment variables in shell level
+          command: |
+            echo "export CONNPASS_USERNAME=${CONNPASS_USERNAME}" >> $BASH_ENV
+            echo "export CONNPASS_PASSWORD=${CONNPASS_PASSWORD}" >> $BASH_ENV
+            echo "export SERVICE_ACCOUNT_INFO_AS_STR='${SERVICE_ACCOUNT_INFO_AS_STR}'" >> $BASH_ENV
       - run: docker run --rm \
-              -e CONNPASS_USERNAME=${CONNPASS_USERNAME} \
-              -e CONNPASS_PASSWORD=${CONNPASS_PASSWORD} \
-              -e SERVICE_ACCOUNT_INFO_AS_STR=${SERVICE_ACCOUNT_INFO_AS_STR} \
+              -e CONNPASS_USERNAME \
+              -e CONNPASS_PASSWORD \
+              -e SERVICE_ACCOUNT_INFO_AS_STR \
               pyconjp/mogirin-db-synchronizer:0.0.1 \
               224112 \
               ${SPREADSHEET_ID}
