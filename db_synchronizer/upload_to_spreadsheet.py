@@ -11,8 +11,10 @@ CONNPASS_TYPE_MAP = {"221241": "一般", "224112": "スタッフ", "224510": "�
 def difference(participants, records):
     if not records:
         return participants
-    max_receipt_number = records[-1]["receipt_number"]
-    return [p for p in participants if p[0] > max_receipt_number]
+    registered_receipt_number_set = {r["receipt_number"] for r in records}
+    return [
+        p for p in participants if p[0] not in registered_receipt_number_set
+    ]
 
 
 if __name__ == "__main__":
