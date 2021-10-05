@@ -62,3 +62,24 @@ class DifferenceTestCase(TestCase):
 
         expected = [(3, "b"), (5, "c"), (11, "e")]
         self.assertEqual(actual, expected)
+
+    def test_no_difference(self):
+        participants = [(5, "c"), (7, "d")]
+        records = [
+            {
+                "receipt_number": 5,
+                "display_name": "c",
+                "collected": "",
+                "type": "スタッフ",
+            },
+            {
+                "receipt_number": 7,
+                "display_name": "d",
+                "collected": "✅",
+                "type": "スタッフ",
+            },
+        ]
+
+        actual = difference(participants, records)
+
+        self.assertEqual(actual, [])
