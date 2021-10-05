@@ -22,6 +22,28 @@ jobs:
               pyconjp/mogirin-db-synchronizer:0.0.1 \
               224112 \
               ${SPREADSHEET_ID}
+  sponsor-sync:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Set environment variables in shell level
+          command: |
+            echo "export CONNPASS_USERNAME=${CONNPASS_USERNAME}" >> $BASH_ENV
+            echo "export CONNPASS_PASSWORD=${CONNPASS_PASSWORD}" >> $BASH_ENV
+            echo "export SERVICE_ACCOUNT_INFO_AS_STR='${SERVICE_ACCOUNT_INFO_AS_STR}'" >> $BASH_ENV
+      - run:
+          name: Execute sync
+          command: |
+            docker run --rm \
+              -e CONNPASS_USERNAME \
+              -e CONNPASS_PASSWORD \
+              -e SERVICE_ACCOUNT_INFO_AS_STR \
+              pyconjp/mogirin-db-synchronizer:0.0.1 \
+              224510 \
+              ${SPREADSHEET_ID}
 
 workflows:
   version: 2
@@ -34,3 +56,10 @@ workflows:
           filters:
             branches:
               only: main
+  sponsor-sync-wf:
+    jobs:
+      - sponsor-sync:
+          filters:
+            branches:
+              only: main
+
