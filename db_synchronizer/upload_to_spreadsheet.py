@@ -7,6 +7,12 @@ import gspread
 
 CONNPASS_TYPE_MAP = {"221241": "一般", "224112": "スタッフ", "224510": "スポンサー"}
 
+
+def difference(participants, records):
+    if not records:
+        return participants
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("participants_csv")
