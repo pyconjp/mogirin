@@ -40,3 +40,25 @@ class DifferenceTestCase(TestCase):
 
         expected = [(7, "d")]
         self.assertEqual(actual, expected)
+
+    def test_sheet_records_are_uncontinuous(self):
+        participants = [(2, "a"), (3, "b"), (5, "c"), (7, "d"), (11, "e")]
+        records = [
+            {
+                "receipt_number": 2,
+                "display_name": "a",
+                "collected": "✅",
+                "type": "スタッフ",
+            },
+            {
+                "receipt_number": 7,
+                "display_name": "d",
+                "collected": "",
+                "type": "スタッフ",
+            },
+        ]
+
+        actual = difference(participants, records)
+
+        expected = [(3, "b"), (5, "c"), (11, "e")]
+        self.assertEqual(actual, expected)
