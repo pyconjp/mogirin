@@ -130,3 +130,6 @@ dmypy.json
 
 # participants CSV downloaded from connpass
 event_*_participants.csv
+
+# docker run --env-file
+.env.list
